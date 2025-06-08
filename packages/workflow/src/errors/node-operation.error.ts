@@ -1,7 +1,7 @@
 import { NodeError } from './abstract/node.error';
 import { ApplicationError } from './application.error';
 import type { NodeOperationErrorOptions } from './node-api.error';
-import type { INode, JsonObject } from '../Interfaces';
+import type { INode, JsonObject } from '../interfaces';
 
 /**
  * Class for instantiating an operational error, e.g. an invalid credentials error.
@@ -35,6 +35,7 @@ export class NodeOperationError extends NodeError {
 		this.description = options.description;
 		this.context.runIndex = options.runIndex;
 		this.context.itemIndex = options.itemIndex;
+		this.context.metadata = options.metadata;
 
 		if (this.message === this.description) {
 			this.description = undefined;
