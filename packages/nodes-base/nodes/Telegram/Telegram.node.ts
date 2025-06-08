@@ -9,7 +9,7 @@ import type {
 import {
 	BINARY_ENCODING,
 	SEND_AND_WAIT_OPERATION,
-	NodeConnectionType,
+	NodeConnectionTypes,
 	NodeOperationError,
 } from 'n8n-workflow';
 import type { Readable } from 'stream';
@@ -21,12 +21,9 @@ import {
 	getPropertyName,
 } from './GenericFunctions';
 import { appendAttributionOption } from '../../utils/descriptions';
+import { configureWaitTillDate } from '../../utils/sendAndWait/configureWaitTillDate.util';
 import { sendAndWaitWebhooksDescription } from '../../utils/sendAndWait/descriptions';
-import {
-	configureWaitTillDate,
-	getSendAndWaitProperties,
-	sendAndWaitWebhook,
-} from '../../utils/sendAndWait/utils';
+import { getSendAndWaitProperties, sendAndWaitWebhook } from '../../utils/sendAndWait/utils';
 
 export class Telegram implements INodeType {
 	description: INodeTypeDescription = {
@@ -41,8 +38,8 @@ export class Telegram implements INodeType {
 			name: 'Telegram',
 		},
 		usableAsTool: true,
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
 				name: 'telegramApi',
@@ -230,7 +227,7 @@ export class Telegram implements INodeType {
 						name: 'Edit Message Text',
 						value: 'editMessageText',
 						description: 'Edit a text message',
-						action: 'Edit a test message',
+						action: 'Edit a text message',
 					},
 					{
 						name: 'Pin Chat Message',
@@ -2198,7 +2195,11 @@ export class Telegram implements INodeType {
 				returnData.push(...executionData);
 			} catch (error) {
 				if (this.continueOnFail()) {
-					returnData.push({ json: {}, error: error.message });
+					const executionErrorData = this.helpers.constructExecutionMetaData(
+						this.helpers.returnJsonArray({ error: error.description ?? error.message }),
+						{ itemData: { item: i } },
+					);
+					returnData.push(...executionErrorData);
 					continue;
 				}
 				throw error;

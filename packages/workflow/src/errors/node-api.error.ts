@@ -5,20 +5,21 @@ import { AxiosError } from 'axios';
 import { parseString } from 'xml2js';
 
 import { NodeError } from './abstract/node.error';
-import type { ReportingOptions } from './application.error';
+import type { ErrorLevel } from './error.types';
 import {
 	NO_OP_NODE_TYPE,
 	UNKNOWN_ERROR_DESCRIPTION,
 	UNKNOWN_ERROR_MESSAGE,
 	UNKNOWN_ERROR_MESSAGE_CRED,
-} from '../Constants';
+} from '../constants';
 import type {
 	INode,
 	JsonObject,
 	IDataObject,
 	IStatusCodeMessages,
 	Functionality,
-} from '../Interfaces';
+	RelatedExecution,
+} from '../interfaces';
 import { removeCircularRefs } from '../utils';
 
 export interface NodeOperationErrorOptions {
@@ -26,10 +27,14 @@ export interface NodeOperationErrorOptions {
 	description?: string;
 	runIndex?: number;
 	itemIndex?: number;
-	level?: ReportingOptions['level'];
+	level?: ErrorLevel;
 	messageMapping?: { [key: string]: string }; // allows to pass custom mapping for error messages scoped to a node
 	functionality?: Functionality;
 	type?: string;
+	metadata?: {
+		subExecution?: RelatedExecution;
+		parentExecution?: RelatedExecution;
+	};
 }
 
 interface NodeApiErrorOptions extends NodeOperationErrorOptions {
